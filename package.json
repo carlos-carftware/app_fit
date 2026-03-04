@@ -1,0 +1,15 @@
+{
+    "name": "fitpro-frontend",
+    "version": "1.0.0",
+    "description": "Frontend de Antigravity FitPro",
+    "scripts": {
+        "start": "concurrently \"node database/server.js\" \"node server.js\"",
+        "stop": "echo \"Para detener el servidor, presiona Ctrl+C en esta terminal.\""
+    },
+    "dependencies": {
+        "express": "^5.2.1"
+    },
+    "devDependencies": {
+        "concurrently": "^9.2.1"
+    }
+}
