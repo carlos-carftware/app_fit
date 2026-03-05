@@ -8,7 +8,8 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Helper: convert raw SQLite errors to friendly messages
 function dbErr(err, res) {
@@ -94,7 +95,7 @@ app.patch('/api/users/:id/photo', (req, res) => {
     const { photoDataUrl } = req.body;
     if (!photoDataUrl) return res.status(400).json({ error: 'No se recibió imagen' });
     // Limit to ~5MB base64
-    if (photoDataUrl.length > 7 * 1024 * 1024) return res.status(400).json({ error: 'La imagen es demasiado grande (máx 5MB)' });
+    if (photoDataUrl.length > 50 * 1024 * 1024) return res.status(400).json({ error: 'La imagen es demasiado grande (máx 5MB)' });
     db.run('UPDATE users SET photo_url = ? WHERE string_id = ?', [photoDataUrl, req.params.id], function (err) {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ success: true, photo_url: photoDataUrl });
@@ -512,7 +513,6 @@ app.get('/api/students', (req, res) => {
 // GET single student
 app.get('/api/students/:id', (req, res) => {
     const query = `SELECT s.*, u.name, u.email, u.avatar, u.avatar_color, u.photo_url,
-                          u.phone, u.dob, u.height, u.weight, u.occupation, u.address,
                           c.name as coach_name, g.name as gym_name
                    FROM students s
                    LEFT JOIN users u ON s.user_id = u.string_id
